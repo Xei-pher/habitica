@@ -55,6 +55,23 @@ router.get('/login', (req, res) => {
 router.get('/signup', (req, res) => {
     res.render('signup', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
 });
+router.post('/login', async (req,res) => {
+    const { email, password} = req.body;
+    
+    const user = await db.collection('user').findOne({email});
+
+    if (!user) {
+        req.flash('error_msg', "Invalid credentials.");
+        return res.redirect("/login")
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        req.flash('error_msg', 'Invalid credentials.');
+        return res.redirect('/login');
+    }
+});
 router.post('/signup', async  (req, res) => {
     const { firstName, lastName, email, birthdate, password, confirmPassword, address } = req.body;
 
