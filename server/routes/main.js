@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const session = require('express-session');
 require('dotenv').config();
 
 
@@ -23,55 +24,103 @@ const generateVerificationToken = (email) => {
     );
 };
 
+// Sessions
+router.use(session({
+    secret: process.env.SECRET,
+    resave:false,
+    saveUninitialized: true,
+    cookie: {secure:false}
+}))
+
 // Functions
 function validatePassword(password) {
-    // Password must be at least 8 characters long
+    // Password Validation
     if (password.length < 8) {
         return false;
     }
-    
     // Check for at least one special character, one lowercase letter, one uppercase letter, and one number
     const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     return regex.test(password);
 }
 function honeypotCheck(address) {
+    // Honeypot Validation For Anti-Bot
     if (address.length > 0) {
         return false;
     }
     return true;
 }
 
-// Routes
+function isLoggedIn(req, res, next){
+    if(req.session.userId){
+        next();
+    }
+    else{
+        req.flash('error_msg', 'Please log in to view this page.');
+        res.redirect('/login'); // Redirect to login if not logged in
+    }
+}
+// Main Route
 router.get('/', (req, res) => {
-    res.render('index', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+    if (req.session.userId) {
+        res.redirect('/home');
+    } else {
+        res.render('index', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+    }
 });
-
 
 
 //User Services
 router.get('/login', (req, res) => {
-    res.render('index', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+    if (req.session.userId) {
+        res.redirect('/home');
+    } else {
+        res.render('index', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+    }
 });
 router.get('/signup', (req, res) => {
+    if(req.session.userId){
+        res.redirect("/home")
+    }
+    else{
     res.render('signup', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+    }
 });
 router.post('/login', async (req,res) => {
     const { email, password} = req.body;
-    
-    const user = await db.collection('user').findOne({email});
+    const db = req.app.locals.db
+    try {
+        const user = await db.collection('user').findOne({ email });
 
-    if (!user) {
-        req.flash('error_msg', "Invalid credentials.");
-        return res.redirect("/login")
-    }
+        if (!user) {
+            req.flash('error_msg', 'Invalid credentials.');
+            return res.redirect('/login');
+        }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-        req.flash('error_msg', 'Invalid credentials.');
-        return res.redirect('/login');
+        if (!isMatch) {
+            req.flash('error_msg', 'Invalid credentials.');
+            return res.redirect('/login');
+        }
+
+        if (!user.verified) {
+            req.flash('error_msg', 'Please verify your email first.');
+            return res.redirect('/login');
+        }
+
+        // Set userId in session
+        req.session.userId = user._id;
+
+        req.flash('success_msg', 'You are now logged in.');
+        res.redirect('/home'); // Redirect to dashboard or any other secure route after login
+
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Something went wrong.');
+        res.redirect('/login');
     }
 });
+
 router.post('/signup', async  (req, res) => {
     const { firstName, lastName, email, birthdate, password, confirmPassword, address } = req.body;
 
@@ -164,5 +213,22 @@ router.get('/verify/:token', async (req, res) => {
         res.redirect('/login'); // Redirect to login page or handle as needed
     }
 });
+// Logout route
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            req.flash('error_msg', 'Something went wrong during logout.');
+            res.redirect('/home'); // Redirect to home page or login page
+        } else {
+            res.clearCookie('token'); // Clear JWT token cookie if set
+            res.redirect('/login'); // Redirect to login page after logout
+        }
+    });
+});
 
+//Home
+router.get('/home', (req, res) => {
+    res.render('home');
+});
 module.exports = router;
