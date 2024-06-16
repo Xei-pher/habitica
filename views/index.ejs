@@ -3,13 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Form</title>
+    <title>Habitica - Welcoome!</title>
     <link rel="stylesheet" href="css/loginsignup.css"> <!-- Link to your CSS file -->
 </head>
 <body>
     <div class="login-container">
-        <h2>Welcome to Habitica!</h2>
+        <h2>Welcome to Habitica!</h2>\
+        <!--  Error Messages -->
+        <% if (messages.error && messages.error.length > 0) { %>
+            <div class="error-container">
+                <% messages.error.forEach(function(error) { %>
+                    <p><%= error %></p>
+                <% }); %>
+            </div>
+        <% } %>
+
+        <!--  Success Messages -->
+        <% if (messages.success && messages.success.length > 0) { %>
+            <div class="success-container">
+                <% messages.success.forEach(function(success) { %>
+                    <p><%= success %></p>
+                <% }); %>
+            </div>
+        <% } %>
         <form action="/login" method="POST">
+            
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>

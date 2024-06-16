@@ -10,6 +10,24 @@ body {
     margin: 0;
 }
 
+.error-container {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text color */
+    border: 1px solid #f5c6cb; /* Red border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px; /* Padding inside the box */
+    margin-bottom: 10px; /* Bottom margin for spacing */
+}
+
+.success-container {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text color */
+    border: 1px solid #c3e6cb; /* Green border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px; /* Padding inside the box */
+    margin-bottom: 10px; /* Bottom margin for spacing */
+}
+
 .login-container,
 .signup-container {
     background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background for form containers */
