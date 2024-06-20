@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habitica - Sign Up</title>
     <link rel="stylesheet" href="css/loginsignup.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <div class="signup-container">
@@ -57,6 +58,7 @@
                 <input type="text" id="address" name="address">
                 <small>Please leave this field empty.</small>
             </div>
+            <div class="g-recaptcha" data-sitekey="<%= sitekey %>"></div>
             <button type="submit">Sign Up</button>
         </form>
         <div class="login-link">

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habitica - Welcome!</title>
     <link rel="stylesheet" href="css/loginsignup.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <div class="login-container">
@@ -39,6 +40,7 @@
             <div class="form-group">
                 <a href="/forgot-password">Forgot Password?</a>
             </div>
+            <div class="g-recaptcha" data-sitekey="<%= sitekey %>"></div>
             <button type="submit">Login</button>
         </form>
         <div class="signup-link">

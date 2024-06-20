@@ -5,8 +5,10 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 require('dotenv').config();
+const axios = require('axios');
 
-
+const recaptchaSiteKey = process.env.RECAPTCHA_SITEKEY;
+const recaptchaSecretKey = process.env.RECAPTCHA_SECRET;
 // Email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -59,35 +61,74 @@ function isLoggedIn(req, res, next){
         res.redirect('/login'); // Redirect to login if not logged in
     }
 }
+
+async function verifyRecaptcha(token) {
+    try {
+        const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+            params: {
+                secret: recaptchaSecretKey,
+                response: token
+            }
+        });
+        return response.data.success;
+    } catch (error) {
+        console.error('Error verifying reCAPTCHA:', error);
+        return false;
+    }
+}
+
 // Main Route
 router.get('/', (req, res) => {
     if (req.session.userId) {
         res.redirect('/home');
     } else {
-        res.render('index', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+        res.render('index', {
+            messages: {
+                error: req.flash('error_msg'),
+                success: req.flash('success_msg')
+            },
+            sitekey: recaptchaSiteKey // Pass the site key to your template
+        });
     }
 });
-
 
 //User Services
 router.get('/login', (req, res) => {
     if (req.session.userId) {
         res.redirect('/home');
     } else {
-        res.render('index', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+        res.render('index', {
+            messages: {
+                error: req.flash('error_msg'),
+                success: req.flash('success_msg')
+            },
+            sitekey: recaptchaSiteKey // Pass the site key to your template
+        });
     }
 });
 router.get('/signup', (req, res) => {
     if(req.session.userId){
         res.redirect("/home")
     }
-    else{
-    res.render('signup', { messages: { error: req.flash('error_msg'), success: req.flash('success_msg') } });
+    else {
+        res.render('signup', {
+            messages: {
+                error: req.flash('error_msg'),
+                success: req.flash('success_msg')
+            },
+            sitekey: recaptchaSiteKey // Pass the site key to your template
+        });
     }
 });
 router.post('/login', async (req,res) => {
-    const { email, password} = req.body;
+    const { email, password, 'g-recaptcha-response': recaptchaToken } = req.body;
     const db = req.app.locals.db
+    const recaptchaVerified = await verifyRecaptcha(recaptchaToken);
+    if (!recaptchaVerified) {
+        req.flash('error_msg', 'reCAPTCHA verification failed. Please try again.');
+        return res.redirect('/login');
+    }
+
     try {
         const user = await db.collection('user').findOne({ email });
 
@@ -122,7 +163,15 @@ router.post('/login', async (req,res) => {
 });
 
 router.post('/signup', async  (req, res) => {
-    const { firstName, lastName, email, birthdate, password, confirmPassword, address } = req.body;
+    console.log()
+    const { firstName, lastName, email, birthdate, password, confirmPassword, address, 'g-recaptcha-response': recaptchaToken } = req.body;
+
+    console.log(recaptchaToken)
+    const recaptchaVerified = await verifyRecaptcha(recaptchaToken);
+    if (!recaptchaVerified) {
+        req.flash('error_msg', 'reCAPTCHA verification failed. Please try again.');
+        return res.redirect('/login');
+    }
 
     if (password !== confirmPassword) {
         req.flash('error_msg', 'Passwords do not match.');
