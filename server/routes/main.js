@@ -6,6 +6,15 @@ const jwt = require('jsonwebtoken');
 const session = require('express-session');
 require('dotenv').config();
 const axios = require('axios');
+const setRateLimit = require("express-rate-limit");
+// Rate limit middleware
+const rateLimitMiddleware = setRateLimit({
+  windowMs: 60 * 1000,
+  max: 1000,
+  message: "Rate Limit Error",
+  headers: true,
+});
+router.use(rateLimitMiddleware);
 
 const recaptchaSiteKey = process.env.RECAPTCHA_SITEKEY;
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET;
