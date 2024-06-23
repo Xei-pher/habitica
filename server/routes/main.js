@@ -117,12 +117,108 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/forgot-password', (req, res) => { 
-        res.render('forgotpassword');
+    res.render('forgotpassword');
 });
 
-router.post('/reset-password', (req, res) => { 
-    res.render('passwordreset');
+router.post('/reset-password', async (req, res) => { 
+    const db = req.app.locals.db;
+    const {email} = req.body;
+    const token = generateVerificationToken(email);
+
+    try {
+        const user = await db.collection('user').findOne({ email });
+
+        if (!user) {
+            req.flash('error_msg', 'Invalid credentials.');
+            return res.redirect('/login');
+        }
+        if (!user.verified) {
+            req.flash('error_msg', 'Please verify your email first.');
+            return res.redirect('/login');
+        }
+
+        const mailOptions = {
+            from: process.env.EMAIL_USERNAME,
+            to: email,
+            subject: 'Habitica: Password Reset',
+            text: `Hi,\n\n`
+                  + `Please click on the following link to reset your password on Habitica:\n`
+                  + `http://localhost:3000/resetpassword/${token}\n\n`
+                  + `If you did not sign up for our service, please ignore this email.\n`
+                  + `Regards,\nHabitica`
+        };
+    
+        await transporter.sendMail(mailOptions);
+        res.render('passwordreset');
+
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Something went wrong.');
+        res.redirect('/login');
+    }
+    
 });
+
+router.get('/resetpassword/:token', async (req, res) => {
+    const token = req.params.token;
+    try {
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        res.render('resetpassword', { messages: {
+            error: req.flash('error_msg'),
+            success: req.flash('success_msg')
+        }, token });
+    } catch (error) {
+        console.error('Error regarding token:', error);
+        req.flash('error_msg', 'Invalid or expired token. Please request a password reset email.');
+        res.redirect('/login');
+    }
+});
+
+// POST reset password
+router.post('/resetpassword/:token', async (req, res) => {
+    const token = req.params.token;
+    const db = req.app.locals.db;
+    try {
+        // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Find user in MongoDB and update verified status
+        const userEmail = decoded.email;
+        const user = await db.collection('user').findOne({ email: userEmail });
+        if (!user) {
+            req.flash('error_msg', 'User not found.');
+            return res.redirect('/login');
+        }
+
+        // Update password logic here
+        const { password, confirmPassword } = req.body;
+        if (password !== confirmPassword) {
+            req.flash('error_msg', 'Passwords do not match.');
+            return res.redirect(`/resetpassword/${token}`);
+        }
+
+        if (!validatePassword(password)) {
+            req.flash('error_msg', 'Invalid password.');
+            return res.redirect(`/resetpassword/${token}`);
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await db.collection('user').findOneAndUpdate(
+            { email: userEmail },
+            { $set: { password: hashedPassword } }
+        );
+
+        req.flash('success_msg', 'Password reset successful.');
+        res.redirect('/login');
+    } catch (error) {
+        console.error('Error regarding token:', error);
+        req.flash('error_msg', 'Invalid or expired token.');
+        res.redirect('/login');
+    }
+});
+
 
 
 router.get('/signup', (req, res) => {
