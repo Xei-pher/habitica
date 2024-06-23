@@ -115,6 +115,16 @@ router.get('/login', (req, res) => {
         });
     }
 });
+
+router.get('/forgot-password', (req, res) => { 
+        res.render('forgotpassword');
+});
+
+router.post('/reset-password', (req, res) => { 
+    res.render('passwordreset');
+});
+
+
 router.get('/signup', (req, res) => {
     if(req.session.userId){
         res.redirect("/home")
