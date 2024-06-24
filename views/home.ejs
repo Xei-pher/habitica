@@ -4,9 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habitica - Home</title>
+    <link href="css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      /* Custom color style */
+      .text-custom {
+        color: #4e89ae !important;
+      }
+
+      .bg-custom {
+        background-color: #4e89ae !important;
+      }
+
+      .border-custom {
+        border-color: #4e89ae !important;
+      }
+    </style>
+    <link href="css/headers.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Home Page</h1>
-    <a href="/logout">Sign Out</a>
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom border-custom">
+          <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+            <span class="fs-4 text-custom">Welcome to Habitica!</span>
+          </a>
+    
+          <ul class="nav nav-pills">
+            <li class="nav-item"><a href="/" class="nav-link active bg-custom text-white" aria-current="page">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link text-custom">About</a></li>
+            <li class="nav-item"><a href="/logout" class="nav-link text-custom">Log Out</a></li>
+          </ul>
+        </header>
+      </div>
+      <div class="b-example-divider"></div>
+      
 </body>
 </html>
