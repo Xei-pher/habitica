@@ -3,21 +3,14 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const session = require('express-session');
-require('dotenv').config();
 const axios = require('axios');
-const setRateLimit = require("express-rate-limit");
-// Rate limit middleware
-const rateLimitMiddleware = setRateLimit({
-  windowMs: 60 * 1000,
-  max: 1000,
-  message: "Rate Limit Error",
-  headers: true,
-});
-router.use(rateLimitMiddleware);
+require('dotenv').config();
+
+const isLoggedIn = require('../middleware/isLoggedIn');
 
 const recaptchaSiteKey = process.env.RECAPTCHA_SITEKEY;
 const recaptchaSecretKey = process.env.RECAPTCHA_SECRET;
+
 // Email
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -30,45 +23,22 @@ const transporter = nodemailer.createTransport({
 const generateVerificationToken = (email) => {
     return jwt.sign(
         { email: email },
-        process.env.JWT_SECRET, // Replace with your own secret key for signing the token
-        { expiresIn: '120m' } // Token expires in 10 minutes
+        process.env.JWT_SECRET,
+        { expiresIn: '120m' }
     );
 };
 
-// Sessions
-router.use(session({
-    secret: process.env.SECRET,
-    resave:false,
-    saveUninitialized: true,
-    cookie: {secure:false}
-}))
-
 // Functions
 function validatePassword(password) {
-    // Password Validation
     if (password.length < 8) {
         return false;
     }
-    // Check for at least one special character, one lowercase letter, one uppercase letter, and one number
     const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     return regex.test(password);
 }
-function honeypotCheck(address) {
-    // Honeypot Validation For Anti-Bot
-    if (address.length > 0) {
-        return false;
-    }
-    return true;
-}
 
-function isLoggedIn(req, res, next){
-    if(req.session.userId){
-        next();
-    }
-    else{
-        req.flash('error_msg', 'Please log in to view this page.');
-        res.redirect('/login'); // Redirect to login if not logged in
-    }
+function honeypotCheck(address) {
+    return address.length === 0;
 }
 
 async function verifyRecaptcha(token) {
@@ -96,12 +66,12 @@ router.get('/', (req, res) => {
                 error: req.flash('error_msg'),
                 success: req.flash('success_msg')
             },
-            sitekey: recaptchaSiteKey // Pass the site key to your template
+            sitekey: recaptchaSiteKey
         });
     }
 });
 
-//User Services
+// User Services
 router.get('/login', (req, res) => {
     if (req.session.userId) {
         res.redirect('/home');
@@ -111,7 +81,7 @@ router.get('/login', (req, res) => {
                 error: req.flash('error_msg'),
                 success: req.flash('success_msg')
             },
-            sitekey: recaptchaSiteKey // Pass the site key to your template
+            sitekey: recaptchaSiteKey
         });
     }
 });
@@ -122,7 +92,7 @@ router.get('/forgot-password', (req, res) => {
 
 router.post('/reset-password', async (req, res) => { 
     const db = req.app.locals.db;
-    const {email} = req.body;
+    const { email } = req.body;
     const token = generateVerificationToken(email);
 
     try {
@@ -156,19 +126,20 @@ router.post('/reset-password', async (req, res) => {
         req.flash('error_msg', 'Something went wrong.');
         res.redirect('/login');
     }
-    
 });
 
 router.get('/resetpassword/:token', async (req, res) => {
     const token = req.params.token;
     try {
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        res.render('resetpassword', { messages: {
-            error: req.flash('error_msg'),
-            success: req.flash('success_msg')
-        }, token });
+        res.render('resetpassword', { 
+            messages: {
+                error: req.flash('error_msg'),
+                success: req.flash('success_msg')
+            }, 
+            token 
+        });
     } catch (error) {
         console.error('Error regarding token:', error);
         req.flash('error_msg', 'Invalid or expired token. Please request a password reset email.');
@@ -176,15 +147,12 @@ router.get('/resetpassword/:token', async (req, res) => {
     }
 });
 
-// POST reset password
 router.post('/resetpassword/:token', async (req, res) => {
     const token = req.params.token;
     const db = req.app.locals.db;
     try {
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Find user in MongoDB and update verified status
         const userEmail = decoded.email;
         const user = await db.collection('user').findOne({ email: userEmail });
         if (!user) {
@@ -192,7 +160,6 @@ router.post('/resetpassword/:token', async (req, res) => {
             return res.redirect('/login');
         }
 
-        // Update password logic here
         const { password, confirmPassword } = req.body;
         if (password !== confirmPassword) {
             req.flash('error_msg', 'Passwords do not match.');
@@ -219,25 +186,23 @@ router.post('/resetpassword/:token', async (req, res) => {
     }
 });
 
-
-
 router.get('/signup', (req, res) => {
-    if(req.session.userId){
-        res.redirect("/home")
-    }
-    else {
+    if (req.session.userId) {
+        res.redirect("/home");
+    } else {
         res.render('signup', {
             messages: {
                 error: req.flash('error_msg'),
                 success: req.flash('success_msg')
             },
-            sitekey: recaptchaSiteKey // Pass the site key to your template
+            sitekey: recaptchaSiteKey
         });
     }
 });
-router.post('/login', async (req,res) => {
+
+router.post('/login', async (req, res) => {
     const { email, password, 'g-recaptcha-response': recaptchaToken } = req.body;
-    const db = req.app.locals.db
+    const db = req.app.locals.db;
     const recaptchaVerified = await verifyRecaptcha(recaptchaToken);
     if (!recaptchaVerified) {
         req.flash('error_msg', 'reCAPTCHA verification failed. Please try again.');
@@ -264,12 +229,10 @@ router.post('/login', async (req,res) => {
             return res.redirect('/login');
         }
 
-        // Set userId in session
         req.session.userId = user._id;
-
-        req.flash('success_msg', 'You are now logged in.');
-        res.redirect('/home'); // Redirect to dashboard or any other secure route after login
-
+        req.session.save(() => {
+            res.redirect('/home');
+        });
     } catch (err) {
         console.error(err);
         req.flash('error_msg', 'Something went wrong.');
@@ -277,15 +240,13 @@ router.post('/login', async (req,res) => {
     }
 });
 
-router.post('/signup', async  (req, res) => {
-    console.log()
-    const { firstName, lastName, email, birthdate, password, confirmPassword, address, 'g-recaptcha-response': recaptchaToken } = req.body;
+router.post('/signup', async (req, res) => {
+    const { email, password, confirmPassword, address, 'g-recaptcha-response': recaptchaToken } = req.body;
+    const db = req.app.locals.db;
 
-    console.log(recaptchaToken)
-    const recaptchaVerified = await verifyRecaptcha(recaptchaToken);
-    if (!recaptchaVerified) {
+    if (!await verifyRecaptcha(recaptchaToken)) {
         req.flash('error_msg', 'reCAPTCHA verification failed. Please try again.');
-        return res.redirect('/login');
+        return res.redirect('/signup');
     }
 
     if (password !== confirmPassword) {
@@ -294,58 +255,48 @@ router.post('/signup', async  (req, res) => {
     }
 
     if (!validatePassword(password)) {
-        req.flash('error_msg', 'Password must be at least 8 characters long and contain at least one special character, one lowercase letter, one uppercase letter, and one number.');
+        req.flash('error_msg', 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character.');
         return res.redirect('/signup');
     }
 
-    if(!honeypotCheck(address)){
-        req.flash('error_msg', 'An error occurred.');
+    if (honeypotCheck(address)) {
+        req.flash('error_msg', 'Spam detected.');
         return res.redirect('/signup');
     }
 
     try {
-        const db = req.app.locals.db;
         const existingUser = await db.collection('user').findOne({ email });
-
         if (existingUser) {
             req.flash('error_msg', 'Email already registered.');
             return res.redirect('/signup');
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const token = generateVerificationToken(email);
 
         const newUser = {
-            firstName,
-            lastName,
             email,
-            birthdate: new Date(birthdate),
             password: hashedPassword,
-            token: token,
-            verified: false
+            verified: false,
+            createdAt: new Date()
         };
 
         await db.collection('user').insertOne(newUser);
 
-        
-
-        // Send verification email
         const mailOptions = {
             from: process.env.EMAIL_USERNAME,
             to: email,
             subject: 'Habitica: Email Verification',
-            text: `Hi ${firstName} ${lastName},\n\n`
-                  + `Thank you for signing up on our website. Please click on the following link to verify your email:\n`
-                  + `http://localhost:3000/verify/${token}\n\n`
+            text: `Hi,\n\n`
+                  + `Please click on the following link to verify your email address on Habitica:\n`
+                  + `http://localhost:3000/verify-email/${token}\n\n`
                   + `If you did not sign up for our service, please ignore this email.\n`
                   + `Regards,\nHabitica`
         };
 
         await transporter.sendMail(mailOptions);
-        req.flash('success_msg', 'Please check your email for verification instructions.');
-        res.redirect('/login'); // Redirect to login page after successful signup
-
+        req.flash('success_msg', 'Signup successful! Please check your email to verify your account.');
+        res.redirect('/signup');
     } catch (err) {
         console.error(err);
         req.flash('error_msg', 'Something went wrong.');
@@ -353,46 +304,44 @@ router.post('/signup', async  (req, res) => {
     }
 });
 
-// Verify route to handle email verification
-router.get('/verify/:token', async (req, res) => {
+router.get('/verify-email/:token', async (req, res) => {
     const token = req.params.token;
     const db = req.app.locals.db;
     try {
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const email = decoded.email;
 
-        // Find user in MongoDB and update verified status
-        const userEmail = decoded.email;
-        const user = await db.collection('user').findOneAndUpdate(
-            { email: userEmail },
-            { $set: { verified: true } }
-        );
+        const user = await db.collection('user').findOne({ email });
+        if (!user) {
+            req.flash('error_msg', 'User not found.');
+            return res.redirect('/signup');
+        }
 
-        req.flash('success_msg', 'Email verification successful. You can now log in.');
-        res.redirect('/login'); // Redirect to login page after successful verification
+        if (user.verified) {
+            req.flash('success_msg', 'Email already verified. You can log in now.');
+            return res.redirect('/login');
+        }
 
-    } catch (error) {
-        console.error('Error verifying token:', error);
-        req.flash('error_msg', 'Invalid or expired token. Please request a new verification email.');
-        res.redirect('/login'); // Redirect to login page or handle as needed
+        await db.collection('user').updateOne({ email }, { $set: { verified: true } });
+        req.flash('success_msg', 'Email verified successfully. You can log in now.');
+        res.redirect('/login');
+    } catch (err) {
+        console.error('Error verifying email:', err);
+        req.flash('error_msg', 'Invalid or expired token.');
+        res.redirect('/signup');
     }
 });
-// Logout route
+
 router.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            console.error('Error destroying session:', err);
-            req.flash('error_msg', 'Something went wrong during logout.');
-            res.redirect('/home'); // Redirect to home page or login page
+            console.error(err);
+            req.flash('error_msg', 'Could not log out. Please try again.');
+            res.redirect('/home');
         } else {
-            res.clearCookie('token'); // Clear JWT token cookie if set
-            res.redirect('/login'); // Redirect to login page after logout
+            res.redirect('/login');
         }
     });
 });
 
-//Home
-router.get('/home', (req, res) => {
-    res.render('home');
-});
 module.exports = router;

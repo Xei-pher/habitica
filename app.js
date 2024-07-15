@@ -1,25 +1,46 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const { MongoClient } = require('mongodb');
 
+
 const app = express();
+const port = process.env.PORT || 3000;
+
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-// EJS
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(flash());
 
+const rateLimitMiddleware = rateLimit({
+    windowMs: 60 * 1000,
+    max: 1000,
+    message: "Rate Limit Error",
+    headers: true,
+});
+app.use(rateLimitMiddleware);
+
+app.use(session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
+// Set up view engine and public folder
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Routes
-app.use('/', require('./server/routes/main'));
+const userRoutes = require('./server/routes/userRoutes');
+const habiticaRoutes = require('./server/routes/habitica');
+
+app.use('/', userRoutes);
+app.use('/', habiticaRoutes);
 
 // MongoDB connection
 const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
