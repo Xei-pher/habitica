@@ -38,7 +38,7 @@ function validatePassword(password) {
 }
 
 function honeypotCheck(address) {
-    return address.length === 0;
+    return address;
 }
 
 async function verifyRecaptcha(token) {
