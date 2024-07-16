@@ -33,8 +33,16 @@
       .border-custom {
         border-color: #4e89ae !important;
       }
+      #calendar {
+        
+        width: 80%; /* Adjust the width as needed */
+        height: 400px; /* Adjust the height as needed */
+        
+      }
     </style>
     <link href="css/headers.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -52,6 +60,18 @@
         </header>
       </div>
       <div class="b-example-divider"></div>
+      <br>
+      <center><h1>Habits Calendar</h1><div id="calendar"></div></center>
       
 </body>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      // Add more configuration options as needed
+    });
+    calendar.render();
+  });
+</script>
 </html>
