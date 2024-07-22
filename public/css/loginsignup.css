@@ -1,6 +1,6 @@
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #4e89ae, #43658b);
+  font-family: 'Montserrat', Arial, sans-serif;
+  background: linear-gradient(to bottom, #85b0cb, #10427b);
   color: #ffffff;
   display: flex;
   justify-content: center;
@@ -9,32 +9,52 @@ body {
   margin: 0;
 }
 
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  max-width: 1200px;
+}
+
+.heading-container {
+  flex: 1;
+  padding-right: 50px;
+}
+
+.heading-container h1 {
+  font-size: 6em;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+}
+
+.error-container,
+.success-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
 .error-container {
-  background-color: #f8d7da; /* Light red background */
-  color: #721c24; /* Dark red text color */
-  border: 1px solid #f5c6cb; /* Red border */
-  border-radius: 5px; /* Rounded corners */
-  padding: 10px; /* Padding inside the box */
-  margin-bottom: 10px; /* Bottom margin for spacing */
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }
 
 .success-container {
-  background-color: #d4edda; /* Light green background */
-  color: #155724; /* Dark green text color */
-  border: 1px solid #c3e6cb; /* Green border */
-  border-radius: 5px; /* Rounded corners */
-  padding: 10px; /* Padding inside the box */
-  margin-bottom: 10px; /* Bottom margin for spacing */
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
 .login-container,
 .signup-container {
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background for form containers */
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.8);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
-  text-align: center;
+  max-width: 400px;
 }
 
 .login-container h2,
