@@ -228,7 +228,7 @@ router.post('/login', async (req, res) => {
             req.flash('error_msg', 'Please verify your email first.');
             return res.redirect('/login');
         }
-
+        req.session.fname = user.firstName;
         req.session.userId = user._id;
         req.session.save(() => {
             res.redirect('/home');

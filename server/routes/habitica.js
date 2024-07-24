@@ -4,11 +4,11 @@ const isLoggedIn = require('../middleware/isLoggedIn');
 
 // Home
 router.get('/home', isLoggedIn, (req, res) => {
-    res.render('home');
+    res.render('home', { fname: req.session.fname });
 });
 
-router.get('/habits', async (req, res) => {
-    res.render('habits');
+router.get('/habits', isLoggedIn, async (req, res) => {
+    res.render('habits', { fname: req.session.fname });
   });
 
 module.exports = router;
