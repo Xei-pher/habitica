@@ -41,6 +41,70 @@
         height: 400px; /* Adjust the height as needed */
         
       }
+      .btn-custom {
+        background-color: #4e89ae;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        }
+
+        .btn-custom:hover {
+        background-color: #3a698f;
+        }
+
+        /* Modal styles */
+      .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1; 
+        left: 0; 
+        top: 0; 
+        width: 100%; 
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgb(0,0,0); 
+        background-color: rgba(0,0,0,0.4); 
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; 
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; 
+        max-width: 500px;
+      }
+
+      .modal-header {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .modal-body {
+        padding: 10px;
+      }
+
+      .modal-footer {
+        padding: 10px;
+        border-top: 1px solid #eee;
+        text-align: right;
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
     </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
@@ -59,13 +123,80 @@
             <li class="nav-item"><a href="/logout" class="nav-link text-custom">Log Out</a></li>
           </ul>
         </header>
+    </div>
+    <div class="b-example-divider"></div>
+    <br>
+    <center><h1>My Habits</h1></center>
+    <br>
+    <center>
+      <button class="btn btn-custom" id="openModal">Create New Habit</button>
+    </center>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Create New Habit</h2>
+          <span class="close" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="habitForm">
+            <div class="mb-3">
+              <label for="habitTitle" class="form-label">Title</label>
+              <input type="text" class="form-control" id="habitTitle" required>
+            </div>
+            <div class="mb-3">
+              <label for="habitDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="habitDescription"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="habitFrequency" class="form-label">Frequency</label>
+              <select class="form-select" id="habitFrequency" required>
+                <option value="" disabled selected>Select frequency</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-custom">Save Habit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-custom" id="closeModalFooter">Close</button>
+        </div>
       </div>
-      <div class="b-example-divider"></div>
-      <br>
-      <center><h1>My Habits</h1></center>
-        <a href="/habits/new">Create New Habit</a>
+    </div>
+
+    <script>
+      // Get the modal
+      var modal = document.getElementById("myModal");
+
+      // Get the button that opens the modal
+      var btn = document.getElementById("openModal");
+
+      // Get the <span> element that closes the modal
+      var span = document.getElementById("closeModal");
+      var closeFooter = document.getElementById("closeModalFooter");
+
+      // When the user clicks the button, open the modal 
+      btn.onclick = function() {
+        modal.style.display = "block";
+      }
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      closeFooter.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+    </script>
 </body>
-<script>
-  
-</script>
 </html>
