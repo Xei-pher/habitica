@@ -7,4 +7,8 @@ router.get('/home', isLoggedIn, (req, res) => {
     res.render('home');
 });
 
+router.get('/habits', async (req, res) => {
+    res.render('habits');
+  });
+
 module.exports = router;
