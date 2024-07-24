@@ -131,40 +131,52 @@
     <center>
       <button class="btn btn-custom" id="openModal">Create New Habit</button>
     </center>
+    <% if (messages && messages.success) { %>
+        <div class="alert alert-success">
+            <%= messages.success %>
+        </div>
+    <% } %>
 
+    <% if (messages && messages.error) { %>
+        <div class="alert alert-danger">
+            <%= messages.error %>
+        </div>
+    <% } %>
     <!-- Modal -->
-    <div id="myModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Create New Habit</h2>
-          <span class="close" id="closeModal">&times;</span>
-        </div>
-        <div class="modal-body">
-          <form id="habitForm">
-            <div class="mb-3">
-              <label for="habitTitle" class="form-label">Title</label>
-              <input type="text" class="form-control" id="habitTitle" required>
-            </div>
-            <div class="mb-3">
-              <label for="habitDescription" class="form-label">Description</label>
-              <textarea class="form-control" id="habitDescription"></textarea>
-            </div>
-            <div class="mb-3">
-              <label for="habitFrequency" class="form-label">Frequency</label>
-              <select class="form-select" id="habitFrequency" required>
-                <option value="" disabled selected>Select frequency</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-custom">Save Habit</button>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-custom" id="closeModalFooter">Close</button>
-        </div>
+    <!-- Modal -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create New Habit</h2>
+        <span class="close" id="closeModal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="habitForm" action="/createhabit" method="POST">
+          <div class="mb-3">
+            <label for="habitTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" id="habitTitle" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="habitDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="habitDescription" name="description"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="habitFrequency" class="form-label">Frequency</label>
+            <select class="form-select" id="habitFrequency" name="frequency" required>
+              <option value="" disabled selected>Select frequency</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-custom">Save Habit</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-custom" id="closeModalFooter">Close</button>
       </div>
     </div>
+  </div>
+  
 
     <script>
       // Get the modal
