@@ -150,6 +150,7 @@
     <center>
       <button class="btn btn-custom" id="openModal">Create New Habit</button>
     </center>
+    <!-- System Messages table -->
     <% if (messages && messages.success) { %>
       <div class="alert" id="success-alert">
           <%= messages.success %>
@@ -161,6 +162,23 @@
           <%= messages.error %>
       </div>
   <% } %>
+  <!-- Habits table -->
+  <div class="container mt-5">
+    <div class="row">
+        <% habits.forEach(habit => { %>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= habit.title %></h5>
+                        <p class="card-text"><%= habit.description %></p>
+                        <p class="card-text"><strong>Frequency:</strong> <%= habit.frequency %></p>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
     <!-- Modal -->
 <div id="myModal" class="modal">
     <div class="modal-content">

@@ -7,8 +7,18 @@ router.get('/home', isLoggedIn, (req, res) => {
     res.render('home', { fname: req.session.fname });
 });
 
-router.get('/habits', isLoggedIn, (req, res) => {
-    res.render('habits', { fname: req.session.fname, messages: req.flash() });
+router.get('/habits', isLoggedIn, async (req, res) => {
+    try{
+        const db = req.app.locals.db;
+        const habits = await db.collection('habits').find({ createdBy: req.session.userId }).toArray();
+
+        res.render('habits', { fname: req.session.fname, habits, messages: req.flash() });
+    }
+    catch(error){
+        console.error('Error fetching habits:', error);
+        req.flash('error', 'An error occurred while fetching habits.');
+        res.redirect('/home');
+    }
 });
 
 // Post routes
