@@ -299,11 +299,42 @@
         const confirmDelete = document.getElementById("confirmDelete");
         const cancelDelete = document.getElementById("cancelDelete");
         const span = document.getElementById("closeDeleteModal");
+        let habitToDelete = id;
         deleteModal.style.display = "block";
 
-        confirmDelete.onclick = function() {
-          window.location.href = "/deletehabit/" + id;
-        }
+        confirmDelete.onclick = async function() {
+        if (habitToDelete) {
+            try {
+                const response = await fetch(`/deletehabit/${habitToDelete}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: habitToDelete })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Success logic: Update UI or notify user
+                    console.log('Habit deleted successfully');
+                    window.location.reload();
+                    // Optionally, you can remove the habit from the DOM or reload the page
+                    // Example: document.getElementById(habitToDelete).remove();
+                } else {
+                    // Error logic: Show error message
+                    console.error('Failed to delete habit:', result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            // Close the modal
+            deleteModal.style.display = "none";
+            habitToDelete = null; // Reset the habit ID
+        }}
+
+                
 
         cancelDelete.onclick = function() {
           deleteModal.style.display = "none";
@@ -312,11 +343,18 @@
         span.onclick = function() {
           deleteModal.style.display = "none";
         
-      }
+        }
+
+        window.onclick = function(event) {
+          if (event.target == deleteModal) {
+            deleteModal.style.display = "none";
+          }
+        }
     }
       function editHabit(id) {
         
       }
+      
     </script>
 </body>
 </html>
