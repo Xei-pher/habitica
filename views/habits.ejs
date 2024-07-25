@@ -124,6 +124,19 @@
       .alert.fade-out {
         opacity: 0;
       }
+
+      .btn-danger-custom {
+          background-color: #dc3545;
+          color: #fff;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
+      }
+
+      .btn-danger-custom:hover {
+          background-color: #c82333;
+      }
     </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
@@ -172,6 +185,8 @@
                         <h5 class="card-title"><%= habit.title %></h5>
                         <p class="card-text"><%= habit.description %></p>
                         <p class="card-text"><strong>Frequency:</strong> <%= habit.frequency %></p>
+                        <button class="btn btn-danger-custom" onclick="deleteHabit('<%= habit._id %>')">Delete</button>
+                        <button class="btn btn-custom" onclick="editHabit('<%= habit._id %>')">Edit</button>
                     </div>
                 </div>
             </div>
@@ -179,7 +194,7 @@
     </div>
 </div>
 
-    <!-- Modal -->
+    <!-- Add Modal -->
 <div id="myModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -212,8 +227,23 @@
       </div>
     </div>
   </div>
-  
-
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Confirm Deletion</h2>
+        <span class="close" id="closeDeleteModal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this habit?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger-custom" id="confirmDelete">Delete</button>
+        <button class="btn btn-custom" id="cancelDelete">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <!-- Edit Modal -->
     <script>
       // Get the modal
       var modal = document.getElementById("myModal");
@@ -262,6 +292,30 @@
             errorAlert.classList.add("fade-out");
           }, 1000); // Show for 3 seconds
         }
+      }
+      
+      function deleteHabit(id) {
+        const deleteModal = document.getElementById("deleteModal");
+        const confirmDelete = document.getElementById("confirmDelete");
+        const cancelDelete = document.getElementById("cancelDelete");
+        const span = document.getElementById("closeDeleteModal");
+        deleteModal.style.display = "block";
+
+        confirmDelete.onclick = function() {
+          window.location.href = "/deletehabit/" + id;
+        }
+
+        cancelDelete.onclick = function() {
+          deleteModal.style.display = "none";
+        }
+        
+        span.onclick = function() {
+          deleteModal.style.display = "none";
+        
+      }
+    }
+      function editHabit(id) {
+        
       }
     </script>
 </body>
