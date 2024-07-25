@@ -105,6 +105,25 @@
         text-decoration: none;
         cursor: pointer;
       }
+
+      /* Alert message styles */
+      .alert {
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px 20px;
+        background-color: #147517;
+        color: white;
+        border-radius: 5px;
+        z-index: 1000;
+      }
+
+      .alert.fade-out {
+        opacity: 0;
+      }
     </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
@@ -132,17 +151,16 @@
       <button class="btn btn-custom" id="openModal">Create New Habit</button>
     </center>
     <% if (messages && messages.success) { %>
-        <div class="alert alert-success">
-            <%= messages.success %>
-        </div>
-    <% } %>
+      <div class="alert" id="success-alert">
+          <%= messages.success %>
+      </div>
+  <% } %>
 
-    <% if (messages && messages.error) { %>
-        <div class="alert alert-danger">
-            <%= messages.error %>
-        </div>
-    <% } %>
-    <!-- Modal -->
+  <% if (messages && messages.error) { %>
+      <div class="alert" id="error-alert" style="background-color: red;">
+          <%= messages.error %>
+      </div>
+  <% } %>
     <!-- Modal -->
 <div id="myModal" class="modal">
     <div class="modal-content">
@@ -207,6 +225,24 @@
       window.onclick = function(event) {
         if (event.target == modal) {
           modal.style.display = "none";
+        }
+      }
+
+      // Fade out alerts
+      window.onload = function() {
+        var successAlert = document.getElementById("success-alert");
+        var errorAlert = document.getElementById("error-alert");
+
+        if (successAlert) {
+          setTimeout(function() {
+            successAlert.classList.add("fade-out");
+          }, 1000); // Show for 3 seconds
+        }
+
+        if (errorAlert) {
+          setTimeout(function() {
+            errorAlert.classList.add("fade-out");
+          }, 1000); // Show for 3 seconds
         }
       }
     </script>
