@@ -52,7 +52,7 @@ router.post('/createhabit', isLoggedIn, async (req, res) => {
     }
 });
 
-router.post('/deletehabit/:id', async (req, res) => {
+router.post('/deletehabit/:id', isLoggedIn, async (req, res) => {
     console.log("jacy");
     try {
         const habitId = req.params.id;
