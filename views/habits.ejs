@@ -223,7 +223,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-custom" id="closeModalFooter">Close</button>
+        <button class="btn btn-danger-custom" id="closeModalFooter">Close</button>
       </div>
     </div>
   </div>
@@ -243,7 +243,40 @@
       </div>
     </div>
   </div>
-  <!-- Edit Modal -->
+  <!-- Edit Habit Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h2>Edit Habit</h2>
+          <span class="close" id="closeEditModal">&times;</span>
+      </div>
+      <div class="modal-body">
+          <form id="editHabitForm" action="/updatehabit" method="POST">
+              <input type="hidden" id="editHabitId" name="id">
+              <div class="mb-3">
+                  <label for="editHabitTitle" class="form-label">Title</label>
+                  <input type="text" class="form-control" id="editHabitTitle" name="title" required>
+              </div>
+              <div class="mb-3">
+                  <label for="editHabitDescription" class="form-label">Description</label>
+                  <textarea class="form-control" id="editHabitDescription" name="description"></textarea>
+              </div>
+              <div class="mb-3">
+                  <label for="editHabitFrequency" class="form-label">Frequency</label>
+                  <select class="form-select" id="editHabitFrequency" name="frequency" required>
+                      <option value="" disabled>Select frequency</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                  </select>
+              </div>
+              <button type="submit" class="btn btn-custom">Save Changes</button>
+          </form>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-danger-custom" id="closeEditModalFooter">Close</button>
+      </div>
+  </div>
+</div>
     <script>
       // Get the modal
       var modal = document.getElementById("myModal");
@@ -351,9 +384,55 @@
           }
         }
     }
-      function editHabit(id) {
-        
-      }
+    // Get the elements for closing the edit modal
+    var editModal = document.getElementById("editModal");
+    var closeEditSpan = document.getElementById("closeEditModal");
+    var closeEditFooter = document.getElementById("closeEditModalFooter");
+
+    // Close the modal when the user clicks on <span> (x)
+    closeEditSpan.onclick = function() {
+        editModal.style.display = "none";
+    }
+
+    closeEditFooter.onclick = function() {
+        editModal.style.display = "none";
+    }
+
+    // Close the modal when the user clicks anywhere outside of it
+    window.onclick = function(event) {
+        if (event.target == editModal) {
+            editModal.style.display = "none";
+        }
+    }
+
+    async function editHabit(id) {
+    // Get the habit details
+    try {
+        const response = await fetch(`/gethabit/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        const habit = await response.json();
+
+        if (habit.success) {
+            // Populate the modal form with habit details
+            document.getElementById('editHabitTitle').value = habit.data.title;
+            document.getElementById('editHabitDescription').value = habit.data.description;
+            document.getElementById('editHabitFrequency').value = habit.data.frequency;
+            document.getElementById('editHabitId').value = habit.data._id;
+
+            // Open the modal
+            document.getElementById('editModal').style.display = 'block';
+        } else {
+            console.error('Failed to fetch habit:', habit.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
       
     </script>
 </body>

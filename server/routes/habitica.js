@@ -53,13 +53,10 @@ router.post('/createhabit', isLoggedIn, async (req, res) => {
 });
 
 router.post('/deletehabit/:id', isLoggedIn, async (req, res) => {
-    console.log("jacy");
     try {
         const habitId = req.params.id;
-        console.log(habitId);
         const db = req.app.locals.db;
         const result = await db.collection('habits').deleteOne({ _id: new ObjectId(habitId) });
-        console.log(result);
         if (result) {
             res.json({ success: true });
         } else {
@@ -69,4 +66,42 @@ router.post('/deletehabit/:id', isLoggedIn, async (req, res) => {
         res.status(500).json({ success: false, error: 'Server error' });
     }
 });
+
+router.get('/gethabit/:id', async (req, res) => {
+    try {
+        const habitId = req.params.id;
+        const db = req.app.locals.db;
+        const habit = await db.collection('habits').findOne({ _id: new ObjectId(habitId) });
+
+        if (habit) {
+            res.json({ success: true, data: habit });
+        } else {
+            res.json({ success: false, error: 'Habit not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+router.post('/updatehabit', async (req, res) => {
+    try {
+        const { id, title, description, frequency } = req.body;
+        const db = req.app.locals.db;
+        const result = await db.collection('habits').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { title, description, frequency } }
+        );
+
+        if (result.matchedCount > 0) {
+            req.flash('success', 'Successfully updated habit.');
+            res.redirect('/habits');
+        } else {
+            
+            res.json({ success: false, error: 'Habit not found' });
+        }
+    } catch (error) {
+        res.status(500).send({ success: false, error: 'Failed to update habit' });
+    }
+});
+
 module.exports = router;
