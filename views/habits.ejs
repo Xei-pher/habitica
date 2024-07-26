@@ -8,24 +8,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-
-      /* Custom color style */
-      .text-custom {
-        color: #4e89ae !important;
+      /* Basic styles */
+      body {
+        background: linear-gradient(to right, #4e89ae, #56c5d0);
+        height: 100vh;
+        margin: 0;
         font-family: 'Montserrat', Arial, sans-serif;
+        color: #fff; /* Default text color for contrast */
+      }
+
+      .main-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .content {
+        flex: 1;
+      }
+
+      footer {
+        background-color: #4e89ae;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+      }
+
+      .text-custom {
+        color: #fff !important; /* Ensures text stands out on the gradient background */
       }
 
       .bg-custom {
@@ -35,78 +45,34 @@
       .border-custom {
         border-color: #4e89ae !important;
       }
-      #calendar {
-        
-        width: 80%; /* Adjust the width as needed */
-        height: 400px; /* Adjust the height as needed */
-        
-      }
+
       .btn-custom {
-        background-color: #4e89ae;
+        background-color: #fff; /* White background for contrast */
+        color: #4e89ae; /* Text color matching the theme */
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+      }
+
+      .btn-custom:hover {
+        background-color: #f0f0f0; /* Light gray background on hover */
+        color: #4e89ae;
+      }
+
+      .btn-danger-custom {
+        background-color: #dc3545; /* Red background for delete button */
         color: #fff;
         border: none;
         padding: 10px 20px;
         font-size: 16px;
         border-radius: 5px;
-        }
-
-        .btn-custom:hover {
-        background-color: #3a698f;
-        }
-
-        /* Modal styles */
-      .modal {
-        display: none; 
-        position: fixed; 
-        z-index: 1; 
-        left: 0; 
-        top: 0; 
-        width: 100%; 
-        height: 100%; 
-        overflow: auto; 
-        background-color: rgb(0,0,0); 
-        background-color: rgba(0,0,0,0.4); 
       }
 
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto; 
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; 
-        max-width: 500px;
+      .btn-danger-custom:hover {
+        background-color: #c82333; /* Darker red on hover */
       }
 
-      .modal-header {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-      }
-
-      .modal-body {
-        padding: 10px;
-      }
-
-      .modal-footer {
-        padding: 10px;
-        border-top: 1px solid #eee;
-        text-align: right;
-      }
-
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-      }
-
-      .close:hover,
-      .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      /* Alert message styles */
       .alert {
         opacity: 1;
         transition: opacity 0.5s ease-out;
@@ -125,17 +91,42 @@
         opacity: 0;
       }
 
-      .btn-danger-custom {
-          background-color: #dc3545;
-          color: #fff;
-          border: none;
-          padding: 10px 20px;
-          font-size: 16px;
-          border-radius: 5px;
+      .modal-content {
+        background-color: #fff;
+        color: #333; /* Dark text color for readability */
       }
 
-      .btn-danger-custom:hover {
-          background-color: #c82333;
+      .modal-header, .modal-footer {
+        border-bottom: 1px solid #eee; /* Light border for separation */
+      }
+
+      .modal-header h2 {
+        color: #4e89ae; /* Header color matching the theme */
+      }
+
+      .modal-body, .modal-footer {
+        padding: 20px;
+      }
+      .nav-link {
+            color: #fff !important;
+            font-weight: 700;
+        }
+
+      .close {
+        color: #4e89ae;
+      }
+
+      .close:hover {
+        color: #3a698f;
+      }
+
+      .card {
+        background-color: #fff; /* Card background for contrast */
+        color: #333; /* Dark text color for readability */
+      }
+
+      .card-title, .card-text {
+        color: #4e89ae; /* Text color matching the theme */
       }
     </style>
     <link href="css/headers.css" rel="stylesheet">
@@ -151,14 +142,14 @@
           <ul class="nav nav-pills">
             <li class="nav-item"><a href="/" class="nav-link text-custom">Home</a></li>
             <li class="nav-item"><a href="/habits" class="nav-link active bg-custom text-white" aria-current="page">My Habits</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-custom">About</a></li>
+            <li class="nav-item"><a href="/about" class="nav-link text-custom">About</a></li>
             <li class="nav-item"><a href="/logout" class="nav-link text-custom">Log Out</a></li>
           </ul>
         </header>
     </div>
     <div class="b-example-divider"></div>
     <br>
-    <center><h1>My Habits</h1></center>
+    <center><h1 class="text-custom">My Habits</h1></center>
     <br>
     <center>
       <button class="btn btn-custom" id="openModal">Create New Habit</button>
@@ -168,115 +159,117 @@
       <div class="alert" id="success-alert">
           <%= messages.success %>
       </div>
-  <% } %>
+    <% } %>
 
-  <% if (messages && messages.error) { %>
+    <% if (messages && messages.error) { %>
       <div class="alert" id="error-alert" style="background-color: red;">
           <%= messages.error %>
       </div>
-  <% } %>
-  <!-- Habits table -->
-  <div class="container mt-5">
-    <div class="row">
-        <% habits.forEach(habit => { %>
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= habit.title %></h5>
-                        <p class="card-text"><%= habit.description %></p>
-                        <p class="card-text"><strong>Frequency:</strong> <%= habit.frequency %></p>
-                        <button class="btn btn-danger-custom" onclick="deleteHabit('<%= habit._id %>')">Delete</button>
-                        <button class="btn btn-custom" onclick="editHabit('<%= habit._id %>')">Edit</button>
-                    </div>
-                </div>
-            </div>
-        <% }) %>
+    <% } %>
+    <!-- Habits table -->
+    <div class="container mt-5">
+      <div class="row">
+          <% habits.forEach(habit => { %>
+              <div class="col-md-4">
+                  <div class="card mb-4">
+                      <div class="card-body">
+                          <h5 class="card-title"><%= habit.title %></h5>
+                          <p class="card-text"><%= habit.description %></p>
+                          <p class="card-text"><strong>Frequency:</strong> <%= habit.frequency %></p>
+                          <button class="btn btn-danger-custom" onclick="deleteHabit('<%= habit._id %>')">Delete</button>
+                          <button class="btn btn-custom" onclick="editHabit('<%= habit._id %>')">Edit</button>
+                      </div>
+                  </div>
+              </div>
+          <% }) %>
+      </div>
     </div>
-</div>
 
     <!-- Add Modal -->
-<div id="myModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Create New Habit</h2>
-        <span class="close" id="closeModal">&times;</span>
-      </div>
-      <div class="modal-body">
-        <form id="habitForm" action="/createhabit" method="POST">
-          <div class="mb-3">
-            <label for="habitTitle" class="form-label">Title</label>
-            <input type="text" class="form-control" id="habitTitle" name="title" required>
-          </div>
-          <div class="mb-3">
-            <label for="habitDescription" class="form-label">Description</label>
-            <textarea class="form-control" id="habitDescription" name="description"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="habitFrequency" class="form-label">Frequency</label>
-            <select class="form-select" id="habitFrequency" name="frequency" required>
-              <option value="" disabled selected>Select frequency</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-custom">Save Habit</button>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-danger-custom" id="closeModalFooter">Close</button>
-      </div>
-    </div>
-  </div>
-  <!-- Delete Modal -->
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Confirm Deletion</h2>
-        <span class="close" id="closeDeleteModal">&times;</span>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this habit?</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-danger-custom" id="confirmDelete">Delete</button>
-        <button class="btn btn-custom" id="cancelDelete">Cancel</button>
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Create New Habit</h2>
+          <span class="close" id="closeModal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="habitForm" action="/createhabit" method="POST">
+            <div class="mb-3">
+              <label for="habitTitle" class="form-label">Title</label>
+              <input type="text" class="form-control" id="habitTitle" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="habitDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="habitDescription" name="description"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="habitFrequency" class="form-label">Frequency</label>
+              <select class="form-select" id="habitFrequency" name="frequency" required>
+                <option value="" disabled selected>Select frequency</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-custom">Save Habit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger-custom" id="closeModalFooter">Close</button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Edit Habit Modal -->
-<div id="editModal" class="modal">
-  <div class="modal-content">
-      <div class="modal-header">
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Confirm Deletion</h2>
+          <span class="close" id="closeDeleteModal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this habit?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger-custom" id="confirmDelete">Delete</button>
+          <button class="btn btn-custom" id="cancelDelete">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Habit Modal -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
           <h2>Edit Habit</h2>
           <span class="close" id="closeEditModal">&times;</span>
-      </div>
-      <div class="modal-body">
+        </div>
+        <div class="modal-body">
           <form id="editHabitForm" action="/updatehabit" method="POST">
-              <input type="hidden" id="editHabitId" name="id">
-              <div class="mb-3">
-                  <label for="editHabitTitle" class="form-label">Title</label>
-                  <input type="text" class="form-control" id="editHabitTitle" name="title" required>
-              </div>
-              <div class="mb-3">
-                  <label for="editHabitDescription" class="form-label">Description</label>
-                  <textarea class="form-control" id="editHabitDescription" name="description"></textarea>
-              </div>
-              <div class="mb-3">
-                  <label for="editHabitFrequency" class="form-label">Frequency</label>
-                  <select class="form-select" id="editHabitFrequency" name="frequency" required>
-                      <option value="" disabled>Select frequency</option>
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                  </select>
-              </div>
-              <button type="submit" class="btn btn-custom">Save Changes</button>
+            <input type="hidden" id="editHabitId" name="id">
+            <div class="mb-3">
+              <label for="editHabitTitle" class="form-label">Title</label>
+              <input type="text" class="form-control" id="editHabitTitle" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="editHabitDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editHabitDescription" name="description"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editHabitFrequency" class="form-label">Frequency</label>
+              <select class="form-select" id="editHabitFrequency" name="frequency" required>
+                <option value="" disabled selected>Select frequency</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-custom">Update Habit</button>
           </form>
-      </div>
-      <div class="modal-footer">
+        </div>
+        <div class="modal-footer">
           <button class="btn btn-danger-custom" id="closeEditModalFooter">Close</button>
+        </div>
       </div>
-  </div>
-</div>
+    </div>
     <script>
       // Get the modal
       var modal = document.getElementById("myModal");

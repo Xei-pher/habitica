@@ -21,6 +21,27 @@ router.get('/habits', isLoggedIn, async (req, res) => {
     }
 });
 
+router.get('/gethabit/:id', isLoggedIn, async (req, res) => {
+    try {
+        const habitId = req.params.id;
+        const db = req.app.locals.db;
+        const habit = await db.collection('habits').findOne({ _id: new ObjectId(habitId) });
+
+        if (habit) {
+            res.json({ success: true, data: habit });
+        } else {
+            res.json({ success: false, error: 'Habit not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+
+router.get('/about', isLoggedIn, (req, res) => {
+    res.render('about', { fname: req.session.fname, messages: req.flash() });
+});
+
 // Post routes
 
 router.post('/createhabit', isLoggedIn, async (req, res) => {
@@ -59,22 +80,6 @@ router.post('/deletehabit/:id', isLoggedIn, async (req, res) => {
         const result = await db.collection('habits').deleteOne({ _id: new ObjectId(habitId) });
         if (result) {
             res.json({ success: true });
-        } else {
-            res.json({ success: false, error: 'Habit not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, error: 'Server error' });
-    }
-});
-
-router.get('/gethabit/:id', async (req, res) => {
-    try {
-        const habitId = req.params.id;
-        const db = req.app.locals.db;
-        const habit = await db.collection('habits').findOne({ _id: new ObjectId(habitId) });
-
-        if (habit) {
-            res.json({ success: true, data: habit });
         } else {
             res.json({ success: false, error: 'Habit not found' });
         }
