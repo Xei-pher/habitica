@@ -58,6 +58,43 @@
             color: #fff;
             font-family: 'Montserrat', Arial, sans-serif;
         }
+
+        .card {
+            background-color: #ffffff;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            color: #4e89ae;
+        }
+
+        .form-control {
+            border: 1px solid #4e89ae;
+        }
+
+        .form-check-input:checked {
+            background-color: #4e89ae;
+            border-color: #4e89ae;
+        }
+
+        .form-check-label {
+            color: #333;
+        }
+
+        .btn-custom {
+            background-color: #4e89ae;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .btn-custom:hover {
+            background-color: #3a698f;
+        }
     </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
@@ -87,7 +124,7 @@
                 <div class="col-md-4">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h5 class="card-title"><%= habit.name %></h5>
+                            <h5 class="card-title"><%= habit.title %></h5>
                             <form class="habit-form" data-habit-id="<%= habit._id %>">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="habitCompleted_<%= habit._id %>" <%= habit.completed ? 'checked' : '' %>>
@@ -95,10 +132,10 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="habitDescription_<%= habit._id %>" class="form-label">Description</label>
-                                    <textarea class="form-control" id="habitDescription_<%= habit._id %>" rows="3"><%= habit.description %></textarea>
+                                    <textarea class="form-control" id="habitDescription_<%= habit._id %>" rows="3" placeholder="<%= habit.description %>" <%= habit.completed ? 'disabled' : '' %>></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-custom">Save</button>
-                            </form>
+                            </form>                            
                         </div>
                     </div>
                 </div>
@@ -109,36 +146,60 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.habit-form').forEach(function(form) {
-                form.addEventListener('submit', function(event) {
-                    event.preventDefault();
+    document.querySelectorAll('.habit-form').forEach(function(form) {
+        var habitId = form.getAttribute('data-habit-id');
+        var checkbox = form.querySelector(`#habitCompleted_${habitId}`);
+        var textarea = form.querySelector(`#habitDescription_${habitId}`);
+        var button = form.querySelector('button');
 
-                    var habitId = form.getAttribute('data-habit-id');
-                    var completed = form.querySelector(`#habitCompleted_${habitId}`).checked;
-                    var description = form.querySelector(`#habitDescription_${habitId}`).value;
+        // Fetch habit log status on page load
+        fetch(`/habitLogs/${habitId}`)
+            .then(response => response.json())
+            .then(log => {
+                if (log.completed) {
+                    checkbox.checked = true;
+                    // Disable form elements if completed
+                    checkbox.disabled = true;
+                    textarea.disabled = true;
+                    button.disabled = true;
+                }
+            });
 
-                    fetch('/updateHabitLog', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            habitId: habitId,
-                            completed: completed,
-                            description: description
-                        })
-                    }).then(response => {
-                        if (response.ok) {
-                            alert('Habit updated successfully');
-                        } else {
-                            alert('Failed to update habit');
-                        }
-                    }).catch(error => {
-                        console.error('Error updating habit:', error);
-                    });
-                });
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var completed = checkbox.checked;
+            var description = textarea.value;
+
+            fetch('/updateHabitLog', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    habitId: habitId,
+                    completed: completed,
+                    description: description
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Habit updated successfully');
+                    // Disable form elements if completed
+                    if (completed) {
+                        checkbox.disabled = true;
+                        textarea.disabled = true;
+                        button.disabled = true;
+                    }
+                } else {
+                    alert('Failed to update habit');
+                }
+            }).catch(error => {
+                console.error('Error updating habit:', error);
             });
         });
+    });
+});
+
     </script>
 </body>
 </html>

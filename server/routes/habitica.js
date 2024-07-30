@@ -51,6 +51,29 @@ router.get('/about', isLoggedIn, (req, res) => {
     res.render('about', { fname: req.session.fname, messages: req.flash() });
 });
 
+router.get('/habitLogs/:habitId', isLoggedIn, async (req, res) => {
+    try {
+        const habitId = req.params.habitId;
+        const createdBy = req.session.userId;
+        const db = req.app.locals.db;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of the day
+
+        const log = await db.collection('habitLogs').findOne({
+            userId: createdBy,
+            habitId: new ObjectId(habitId),
+            date: today
+        });
+
+        res.json(log || { completed: false });
+    } catch (error) {
+        console.error('Error fetching habit log:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 // Post routes
 
 router.post('/createhabit', isLoggedIn, async (req, res) => {
@@ -119,13 +142,23 @@ router.post('/updatehabit', async (req, res) => {
 });
 
 router.post('/updateHabitLog', isLoggedIn, async (req, res) => {
-    const {date, completed, description } = req.body;
+    const { habitId, completed, description } = req.body;
     const createdBy = req.session.userId;
     const db = req.app.locals.db;
 
     try {
+        const habit = await db.collection('habits').findOne({ _id: new ObjectId(habitId) });
+
+        if (!habit) {
+            return res.status(404).send('Habit not found');
+        }
+
+        const today = new Date();
+        const resetDate = habit.frequency === 'daily' ? today.setHours(0, 0, 0, 0) : today.setDate(today.getDate() - today.getDay());
+
+        // Update the habit log based on the frequency
         await db.collection('habitLogs').updateOne(
-            { userId: createdBy, date: new Date(date) },
+            { userId: createdBy, habitId: new ObjectId(habitId), date: new Date(resetDate) },
             {
                 $set: {
                     completed: completed,
@@ -141,5 +174,6 @@ router.post('/updateHabitLog', isLoggedIn, async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 module.exports = router;

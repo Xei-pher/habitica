@@ -10,125 +10,165 @@
     <style>
       /* Basic styles */
       body {
-        background: linear-gradient(to right, #4e89ae, #56c5d0);
-        height: 100vh;
-        margin: 0;
-        font-family: 'Montserrat', Arial, sans-serif;
-        color: #fff; /* Default text color for contrast */
+          background: linear-gradient(to right, #4e89ae, #56c5d0);
+          height: 100vh;
+          margin: 0;
+          font-family: 'Montserrat', Arial, sans-serif;
+          color: #fff; /* Default text color for contrast */
       }
 
       .main-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
       }
 
       .content {
-        flex: 1;
+          flex: 1;
       }
 
       footer {
-        background-color: #4e89ae;
-        color: #fff;
-        text-align: center;
-        padding: 10px;
+          background-color: #4e89ae;
+          color: #fff;
+          text-align: center;
+          padding: 10px;
       }
 
       .text-custom {
-        color: #fff !important; /* Ensures text stands out on the gradient background */
+          color: #fff !important; /* Ensures text stands out on the gradient background */
       }
 
       .bg-custom {
-        background-color: #4e89ae !important;
+          background-color: #4e89ae !important;
       }
 
       .border-custom {
-        border-color: #4e89ae !important;
+          border-color: #4e89ae !important;
       }
 
       .btn-custom {
-        background-color: #fff; /* White background for contrast */
-        color: #4e89ae; /* Text color matching the theme */
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
+          background-color: #fff; /* White background for contrast */
+          color: #4e89ae; /* Text color matching the theme */
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
       }
 
       .btn-custom:hover {
-        background-color: #f0f0f0; /* Light gray background on hover */
-        color: #4e89ae;
+          background-color: #f0f0f0; /* Light gray background on hover */
+          color: #4e89ae;
       }
 
       .btn-danger-custom {
-        background-color: #dc3545; /* Red background for delete button */
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 5px;
+          background-color: #dc3545; /* Red background for delete button */
+          color: #fff;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
       }
 
       .btn-danger-custom:hover {
-        background-color: #c82333; /* Darker red on hover */
+          background-color: #c82333; /* Darker red on hover */
       }
 
       .alert {
-        opacity: 1;
-        transition: opacity 0.5s ease-out;
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        padding: 10px 20px;
-        background-color: #147517;
-        color: white;
-        border-radius: 5px;
-        z-index: 1000;
+          opacity: 1;
+          transition: opacity 0.5s ease-out;
+          position: fixed;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          padding: 10px 20px;
+          background-color: #147517;
+          color: white;
+          border-radius: 5px;
+          z-index: 1000;
       }
 
       .alert.fade-out {
-        opacity: 0;
+          opacity: 0;
       }
 
+      .modal {
+          display: none; /* Hidden by default */
+          position: fixed; /* Stay in place */
+          z-index: 1050; /* Sit on top */
+          left: 0;
+          top: 0;
+          width: 100%; /* Full width */
+          height: 100%; /* Full height */
+          overflow: auto; /* Enable scroll if needed */
+          background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+      }
+
+      .modal-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%; /* Adjust as needed */
+            width: 600px; /* Default width, adjust as needed */
+        }
+
       .modal-content {
-        background-color: #fff;
-        color: #333; /* Dark text color for readability */
+          background-color: #fff;
+          color: #333; /* Dark text color for readability */
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
       .modal-header, .modal-footer {
-        border-bottom: 1px solid #eee; /* Light border for separation */
+          border-bottom: 1px solid #eee; /* Light border for separation */
       }
 
       .modal-header h2 {
-        color: #4e89ae; /* Header color matching the theme */
+          color: #4e89ae; /* Header color matching the theme */
       }
 
       .modal-body, .modal-footer {
-        padding: 20px;
+          padding: 20px;
       }
+
       .nav-link {
-            color: #fff !important;
-            font-weight: 700;
-        }
+          color: #fff !important;
+          font-weight: 700;
+      }
 
       .close {
-        color: #4e89ae;
+          color: #4e89ae;
+          font-size: 1.5rem;
       }
 
       .close:hover {
-        color: #3a698f;
+          color: #3a698f;
       }
 
       .card {
-        background-color: #fff; /* Card background for contrast */
-        color: #333; /* Dark text color for readability */
+          background-color: #fff; /* Card background for contrast */
+          color: #333; /* Dark text color for readability */
       }
 
       .card-title, .card-text {
-        color: #4e89ae; /* Text color matching the theme */
+          color: #4e89ae; /* Text color matching the theme */
       }
-    </style>
+
+      #editButton {
+    background-color: #3a698f; /* Blue background */
+    color: #fff; /* White text */
+    border: none; /* No border */
+    padding: 10px 20px; /* Padding */
+    font-size: 16px; /* Font size */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    text-align: center; /* Center text */
+}
+
+#editButton:hover {
+    background-color: #2c5d80; /* Darker blue on hover */
+}
+  </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
 <body>
@@ -177,7 +217,7 @@
                           <p class="card-text"><%= habit.description %></p>
                           <p class="card-text"><strong>Frequency:</strong> <%= habit.frequency %></p>
                           <button class="btn btn-danger-custom" onclick="deleteHabit('<%= habit._id %>')">Delete</button>
-                          <button class="btn btn-custom" onclick="editHabit('<%= habit._id %>')">Edit</button>
+                          <button class="btn btn-custom" id="editButton" onclick="editHabit('<%= habit._id %>')">Edit</button>
                       </div>
                   </div>
               </div>
@@ -187,6 +227,7 @@
 
     <!-- Add Modal -->
     <div id="myModal" class="modal">
+      <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Create New Habit</h2>
@@ -210,7 +251,7 @@
                 <option value="weekly">Weekly</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-custom">Save Habit</button>
+            <button type="submit" class="btn btn-custom" id ="editButton">Save Habit</button>
           </form>
         </div>
         <div class="modal-footer">
@@ -218,9 +259,10 @@
         </div>
       </div>
     </div>
-
+  </div>
     <!-- Delete Modal -->
     <div id="deleteModal" class="modal">
+      <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Confirm Deletion</h2>
@@ -235,9 +277,11 @@
         </div>
       </div>
     </div>
+  </div>
 
     <!-- Edit Habit Modal -->
     <div id="editModal" class="modal">
+      <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Edit Habit</h2>
@@ -262,7 +306,7 @@
                 <option value="weekly">Weekly</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-custom">Update Habit</button>
+            <button type="submit" class="btn btn-custom" id ="editButton">Update Habit</button>
           </form>
         </div>
         <div class="modal-footer">
@@ -270,6 +314,7 @@
         </div>
       </div>
     </div>
+  </div>
     <script>
       // Get the modal
       var modal = document.getElementById("myModal");
