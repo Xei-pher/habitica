@@ -2,9 +2,18 @@ const express = require('express');
 const router = express.Router();
 const isLoggedIn = require('../middleware/isLoggedIn');
 const { ObjectId } = require('mongodb');
+
 // Get routes
-router.get('/home', isLoggedIn, (req, res) => {
-    res.render('home', { fname: req.session.fname });
+router.get('/home', isLoggedIn, async (req, res) => {
+    db = req.app.locals.db;
+    try{
+        const habits = await db.collection('habits').find({createdBy: req.session.userId}).toArray();
+        res.render('home', { fname: req.session.fname, habits: Array.isArray(habits) ? habits : [], createdBy: req.session.userId });
+    }
+    catch(error){
+        console.error('Error fetching habits:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 router.get('/habits', isLoggedIn, async (req, res) => {
@@ -106,6 +115,30 @@ router.post('/updatehabit', async (req, res) => {
         }
     } catch (error) {
         res.status(500).send({ success: false, error: 'Failed to update habit' });
+    }
+});
+
+router.post('/updateHabitLog', isLoggedIn, async (req, res) => {
+    const {date, completed, description } = req.body;
+    const createdBy = req.session.userId;
+    const db = req.app.locals.db;
+
+    try {
+        await db.collection('habitLogs').updateOne(
+            { userId: createdBy, date: new Date(date) },
+            {
+                $set: {
+                    completed: completed,
+                    description: description
+                }
+            },
+            { upsert: true }
+        );
+
+        res.status(200).send('Habit log updated successfully');
+    } catch (error) {
+        console.error('Error updating habit log:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
