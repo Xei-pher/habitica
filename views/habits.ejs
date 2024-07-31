@@ -6,7 +6,7 @@
     <title>Habitica - Habits</title>
     <link href="css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
       /* Basic styles */
       body {
@@ -15,23 +15,30 @@
           margin: 0;
           font-family: 'Montserrat', Arial, sans-serif;
           color: #fff; /* Default text color for contrast */
+          display: flex;
+          flex-direction: column;
       }
 
       .main-container {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-      }
-
-      .content {
           flex: 1;
       }
 
       footer {
           background-color: #4e89ae;
+          padding: 20px 0;
           color: #fff;
           text-align: center;
-          padding: 10px;
+          margin-top: auto; /* Push footer to the bottom */
+      }
+
+      .footer a {
+          color: #fff;
+          margin: 0 10px;
+          font-size: 1.5rem;
+      }
+
+      .footer a:hover {
+          color: #ffeb3b;
       }
 
       .text-custom {
@@ -104,13 +111,13 @@
       }
 
       .modal-dialog {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            max-width: 90%; /* Adjust as needed */
-            width: 600px; /* Default width, adjust as needed */
-        }
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          max-width: 90%; /* Adjust as needed */
+          width: 600px; /* Default width, adjust as needed */
+      }
 
       .modal-content {
           background-color: #fff;
@@ -155,19 +162,19 @@
       }
 
       #editButton {
-    background-color: #3a698f; /* Blue background */
-    color: #fff; /* White text */
-    border: none; /* No border */
-    padding: 10px 20px; /* Padding */
-    font-size: 16px; /* Font size */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    text-align: center; /* Center text */
-}
+          background-color: #3a698f; /* Blue background */
+          color: #fff; /* White text */
+          border: none; /* No border */
+          padding: 10px 20px; /* Padding */
+          font-size: 16px; /* Font size */
+          border-radius: 5px; /* Rounded corners */
+          cursor: pointer; /* Pointer cursor on hover */
+          text-align: center; /* Center text */
+      }
 
-#editButton:hover {
-    background-color: #2c5d80; /* Darker blue on hover */
-}
+      #editButton:hover {
+          background-color: #2c5d80; /* Darker blue on hover */
+      }
   </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
@@ -315,6 +322,14 @@
       </div>
     </div>
   </div>
+  <!-- Footer Section -->
+  <footer class="footer">
+    <div class="container">
+        <a href="https://github.com/Xei-pher" target="_blank"><i class="fab fa-github"></i></a>
+        <a href="https://www.linkedin.com/in/seifer-rija-boado-0a196a238/" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a href="https://seifer-portfolio.carrd.co/" target="_blank"><i class="fas fa-briefcase"></i></a>
+    </div>
+</footer>
     <script>
       // Get the modal
       var modal = document.getElementById("myModal");

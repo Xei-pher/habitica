@@ -6,8 +6,20 @@
     <title>Habitica - Home</title>
     <link href="css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+        }
+
         .text-custom {
             color: #4e89ae !important;
             font-family: 'Montserrat', Arial, sans-serif;
@@ -37,6 +49,7 @@
         .main {
             background: linear-gradient(to right, #4e89ae, #56c5d0);
             padding: 20px;
+            flex: 1;
         }
 
         .navbar-custom {
@@ -95,6 +108,24 @@
         .btn-custom:hover {
             background-color: #3a698f;
         }
+
+        /* Footer custom style */
+        .footer {
+            background-color: #4e89ae;
+            padding: 20px 0;
+            color: #fff;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #fff;
+            margin: 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .footer a:hover {
+            color: #ffeb3b;
+        }
     </style>
     <link href="css/headers.css" rel="stylesheet">
 </head>
@@ -113,37 +144,44 @@
                 <li class="nav-item"><a href="/logout" class="nav-link text-custom">Log Out</a></li>
             </ul>
         </header>
-    </div>
-    <div class="main">
-        <div class="container">
-            <center>
-                <h1>My Habits</h1>
-            </center>
-            <div class="row">
-                <% habits.forEach(function(habit) { %>
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= habit.title %></h5>
-                            <form class="habit-form" data-habit-id="<%= habit._id %>">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="habitCompleted_<%= habit._id %>" <%= habit.completed ? 'checked' : '' %>>
-                                    <label class="form-check-label" for="habitCompleted_<%= habit._id %>">Mark as completed</label>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="habitDescription_<%= habit._id %>" class="form-label">Description</label>
-                                    <textarea class="form-control" id="habitDescription_<%= habit._id %>" rows="3" placeholder="<%= habit.description %>" <%= habit.completed ? 'disabled' : '' %>></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-custom">Save</button>
-                            </form>                            
+        <div class="main">
+            <div class="container">
+                <center>
+                    <h1>My Habits</h1>
+                </center>
+                <div class="row">
+                    <% habits.forEach(function(habit) { %>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= habit.title %></h5>
+                                <form class="habit-form" data-habit-id="<%= habit._id %>">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="habitCompleted_<%= habit._id %>" <%= habit.completed ? 'checked' : '' %>>
+                                        <label class="form-check-label" for="habitCompleted_<%= habit._id %>">Mark as completed</label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="habitDescription_<%= habit._id %>" class="form-label">Description</label>
+                                        <textarea class="form-control" id="habitDescription_<%= habit._id %>" rows="3" placeholder="<%= habit.description %>" <%= habit.completed ? 'disabled' : '' %>></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-custom">Save</button>
+                                </form>                            
+                            </div>
                         </div>
                     </div>
+                    <% }); %>
                 </div>
-                <% }); %>
             </div>
         </div>
     </div>
-
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <a href="https://github.com/Xei-pher" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/seifer-rija-boado-0a196a238/" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="https://seifer-portfolio.carrd.co/" target="_blank"><i class="fas fa-briefcase"></i></a>
+        </div>
+    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.habit-form').forEach(function(form) {
